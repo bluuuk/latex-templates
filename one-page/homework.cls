@@ -13,7 +13,7 @@
 \ProvidesClass{homework}[2021/01/01 Homework]
 \DeclareOption{handout}{\PassOptionsToClass{\CurrentOption}{amsart}}
 \ProcessOptions\relax
-\LoadClass[10pt, oneside, a4paper]{amsart}
+\LoadClass[11pt, oneside, a4paper]{amsart}
 \RequirePackage[margin=0.75in]{geometry} % For margins
 \RequirePackage{lmodern, enumitem, needspace} % Needspace for dynamic line breaking
 \RequirePackage{graphicx, wrapfig, pgffor, ifthen} % For images, wrappings and if statements

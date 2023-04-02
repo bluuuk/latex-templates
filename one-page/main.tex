@@ -1,29 +1,61 @@
 \documentclass{homework}
-\title{The Ashley Madison ‘hack’ }
+\title{Automobile Security}
 \usepackage{url}
 
 \begin{document} \maketitle
 
-\paragraph{\textbf{The organization}}The Ashley Madison hack refers to the July 2015 cyber-attack on dating websites that caters to people who are already in relationships. The Canadian parent company at that time \emph{Avid Life Media} had its flagship dating websites \emph{AshleyMadison.com}(AM) connecting dishonest men and/or women seeking affairs with one out of 37 million likeminded people~\cite{paper}. In 2015, they were advertising their service with a big emphasis on “discreetness” and an attached “trusted security award” medal – especially what their customers are looking for when needing an affair~\cite{wayback}.
+\paragraph{\textbf{Cars are computers on wheels}}
+Let's take a look back into the history of automobiles. We disregard the part where
+the interaction with components inside the car was purely mechanical. At one point, car manufacturers
+added \emph{electronic control units (ECUs)} that manage everything from engine performance to entertainment systems.
+ECUs are special embedded devices, therefore have a processor and memory, which react to sensor inputs to make decisions~\cite{carhackingbasics}.
+However, they need a means of communication. Either, one could wire up every control unit with every dependable control unit
+or come up with a unified approach to let components communicate. The \emph{Controller Area Network (CAN)} was born in 1986
+by the German car component supplier \emph{Bosch}. The general idea behind CAN was to create a standardized method for
+ECUs to communicate in real-time without requiring a host computer by broadcasting messages
+to each ECU which then can decide if the message is intended for them. Furthermore, message have no source 
+or destination identifier~\cite{carhackingbasics}. 
 
-A continuous stream of money way generated via subscriptions and a deletion service. Customers could create a free profile at AM, but initiating contact with a female was attached with a nifty price tag for men starting at 49\$~\cite{sub}. According to the leaked data 86\% of the users were male~\cite{paper}. In addition to the subscription, users could pay 19\$ to fully delete their data. Nevertheless, leaked data suggests that user data was never deleted however~\cite{paper}.
+\paragraph{\textbf{CAN is safe}} ... as long as it is a closed network. The threat modelling back then did not assume
+that cars will be exposed to other networks or that a none critical component could access the CAN-bus.
+At that time, the most important design aspect was availability for safety concerns. If
+I hit the break, I certainly want the car to stop over everything else. However, Car manufacturers kept pushing for new features like movies,
+traffic assistance or even autonomous driving. For example, carmaker \emph{Ford} submitted a patent request to let a car drive back 
+by itself to a defined location if the owner misses payments~\cite{ford}. Due to the nature of CAN, having access to the network 
+means that we can easily inject messages and sniff messages~\cite{carhackingbasics}.
 
-\paragraph{\textbf{Timeline}}On the 12 July of 2015, employees of Avid Life Media encountered a message that their system have been breached when logging into the computer system. The breaching party \emph{Impact Team} demanded that the site AM and affiliate sites should be shut down and threated with a full data release of customer and employee records. Shortly after, the Impact team started to publish small amounts of data because their demand was not met. At that time, the CEO of Avid Life Media didn’t discuss the data’s validity but confirmed the data breach. The published data only contained login email addresses which were not verified at registration by AM. The following data dump ,however, contained internal company data like source code and internal emails of the CEO. Again, Impact team's demands were not met prompting to a harsher response: Releasing actual user data. The data contained parts of the credit card information, billing information like address and full name, and dating information~\cite{erratasec}.
+This screams that cars will become heavily connected devices as time progress which will communicate with the outside world. Obviously,
+this has many advantages in terms of innovation. On the other hand, this opens up the gates for a broader attack surface. Many systems 
+communicate remotely~\cite{carhackingsurface}:
 
-However, it is heavily disputed to what extend user data has been published online. The company itself claims that many copycats aim to get attention by releasing fake data. \emph{KrebsOnSecurity} could verify for a small sample of users that their user information has indeed been exposed~\cite{krebs1}.To this day, the acteurs stay unrevealed~\cite{krebs2}. Although the CEO of the company pointed out an insider attack, no one was arrested for the attack. In General, the company portrayed itself as a victim to a fierce attack on its service. Instead of a responsible notification to their users, the company’s statements tried to scrutinize the validity of the breached data~\cite{paper}.
+\begin{itemize}
+    \item The \emph{Tire Pressure Monitoring System} is inside the tire and communicates via radio frequencies with a range of up to 1 meter
+    \item The \emph{Remote Keyless Entry} to unlock a car can result in a denial of driving if attacked because of it long range of up to 20 meters
+    \item Telematics, Cellular, Wi-Fi which can have high ranges dubbed the \emph{holy grail of automotive attacks}
+\end{itemize}
 
-\paragraph{\textbf{Impact}}After understanding how AM generates money, we can identify their biggest business risk: \emph{Trust}. Their target audience were unhappy married woman and men who do seek discretion, because divorces are expensive and publicizing such sensitive data hurts one’s reputation among friends and community. Till date, the number of affected divorces is unknown. There also surface suicide reports from former members which could not be undoubtedly linked~\cite{paper}. This highlights again why companies should take data privacy and security seriously. Even if spouses of active members didn’t find out about their loved one’s activity, cyber criminals took the chance to pressure them into paying for keeping silence. These type of \emph{blackmailing and sextortion} campaigns even surface long after the initial breach~\cite[Min. 9]{youtube}.
-The company had to pay a fine of \$17.5 million to the Federal Trade Commission. However, the fine was reduced to \$1.66 million to not put the company out of business~\cite{theguardian}.
+\paragraph{\textbf{Remote C(ar)ode Execution}}
 
-After the data breach, the company also chose to rebrand themselves~\cite{twitter}. This move is done such that customers don’t associate the company with the data breach. Furthermore, the renaming can be interpreted as a fool towards investors and employees. Despite all the troubles, the company didn't go bankrupt.
+Before enumerating different existing attacks, I want to highlight the work of \emph{Dr. Charlie Miller and Chris Valasek} who hacked
+a Jeep back in 2015. They open sourced a remarkable collection of intelligence about car hacking.
 
-\paragraph{\textbf{Security Analysis}}There is no public technical analysis of how the impact team broke into AM systems. According to the intruders, they were monitoring the system for already long period of time~\cite{paper}. Furthermore, Avid Life Media aggressively used DMCA-Takedowns to hide the breached data. According to Gabor Szathmari~\cite{security1}, the source code contained \emph{hardcoded credentials} in the form of \emph{database password}, \emph{AWS token}, \emph{private SSL key} and other API tokens. The author did not further explore the storage bucket (S3) associated with the AWS token, but this could likely have been a storage for user chats, images, and videos. Therefore, the developers at AM followed the classic perimeter model. Once the access is gained, the intrudors are free to explore the inner workings.
+\begin{itemize}
+    \item Researcher conduct an experimental analysis of car security with driving disabled car attaching wires to a debug port to listen to CAN messages. This work was one of the first glimps into what an attacker can do if she has access to the CAN bus. They were able to take control of the brake without the possibility of a manual override of the driver~\cite{hackingacorvert}
+    \item While a reporter was sitting inside a Jeep, it was fully controlled by remotely stopping the reporter on a highway at the end~\cite{carhackingWired}
+    \item A vulnerability in the Wi-Fi firmware allowed attacker to abuse a heap overflow resulting into remote code execution on a \emph{Tesla Model S/X}~\cite{hackwifitecent}
+\end{itemize}
 
-The incident can be taken as a prime example to show that hard coded credentials don't belong into the source code and not on source controlling systems (e.g. GitHub) where they will remain forever. Furthermore, credentials should be supplied to system dynamically via deployment inside environment variables or key vaults. Each deployment of different system parts should only receive the least necessary credentials~\cite{cwe}.
-Additionally, the user passwords were saved via a safe bcrypt password hash and an unsafe md5 hash. One group proceeded to crack the md5 hashes to attack the related bcrypt hash to obtain around 11 million passwords. To prevent such issues, developers should stick to strong password hash functions and have independent code reviews in place~\cite{security2}.
-Lastly, the developers could have prevented the attack by employing better detection measures. One could monitor database or S3 access to find malicious access.
+
 \paragraph{\textbf{Summary}}
-In general, the Ashley Madison hack was a major event that had far-reaching consequences for the individuals and companies involved, as well as for the broader issue of online privacy and security. The website's user data, including email addresses, names, and credit card information, were published to the public, potentially exposing the personal information of millions of users. In particular, the breach specifically highlighted far reaching consequences: It ruined many relations and probably put people into suicide. Furthermore, the response from the breached company left many people in the dark and put the blame on someone else at the end: \textbf{the users}.
+Summa summarum, car security is an increasingly worrying field with new features added to cars to connect them to networks and maybe other 
+driving participants in the future. This is a prime example where cyber security is directly associated with human safety.
+The attacks enumerated could directly impact human lives - remotely killing someone by letting it look like an accident with emergency brakes
+which can not be manually overridden. Also, cars are produced \emph{en masse} and have a great longevity of up to 10 years!
+Manufacturers have to provide updates for cars that are even 10 years old. It's quite the opposite for mobile phones,
+where each new generation a new one becomes obsolete and therefore doesn't receive software updates. For example, when the car
+has its annual safety inspections, a check for security like `up to date` software should be included as well. Someone could argue
+that carmakers should also be responsible to provide `state of the art` security which would push cars into a subscription based
+service. Let's see how carmakers will deal with subscription of services in the future, like \emph{Mercedes does with a faster acceleration paywall}~\cite{subscription}.
 
 % citations
 \bibliographystyle{plain}
